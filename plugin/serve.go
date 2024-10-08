@@ -21,6 +21,7 @@ import (
 type ServeOpts struct {
 	PluginName string
 	PluginFunc PluginFunc
+	Logger     hclog.Logger
 }
 
 type NewPluginOptions struct {
@@ -55,7 +56,12 @@ const (
 
 func Server(opts *ServeOpts) *grpc.PluginServer {
 	// create the logger
-	logger := setupLogger()
+	var logger hclog.Logger
+	if opts.Logger == nil {
+		logger = setupLogger()
+	} else {
+		logger = opts.Logger
+	}
 
 	log.Printf("[INFO] Serve")
 	// add logger into the context for the plugin create func
